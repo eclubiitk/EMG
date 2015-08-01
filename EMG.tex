@@ -1,0 +1,188 @@
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{anysize}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{amsthm}
+\geometry{
+ a4paper,
+ total={210mm,297mm},
+ left=40mm,
+ right=40mm,
+ top=20mm,
+ bottom=20mm,
+ }
+ \lstset {
+    language=C++,
+    backgroundcolor=\color{black!5},
+    commentstyle=\color{red},
+    basicstyle=\footnotesize\ttfamily
+}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+ 
+\urlstyle{same}
+%\pagenumbering{gobble}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{7cm}
+        
+        {\Huge{\textbf{EMG: Hand Gesture Recognition}}}
+        \vspace{1.5cm}
+        
+        {\large{Jishant Singh\\
+Department of Electrical Engineering\\
+Indian Institute of Technology, Kanpur\\}
+\vspace{0.5cm}
+{\large{Krutika Kalkal\\
+Department of Civil Engineering\\
+Indian Institute of Technology, Kanpur\\}}
+\vspace{0.5cm}
+{\large{Kunal Kapila\\
+Department of Mathematics\\
+Indian Institute of Technology, Kanpur\\}}
+\vspace{0.5cm}
+{\large{M. Afroz Alam\\
+Department of Computer Science and Engineering\\
+Indian Institute of Technology, Kanpur}}
+
+        \vfill
+        }
+    \end{center}
+\end{titlepage}
+
+%\section{Introduction}
+%NT
+%\citep{nt}
+\pagebreak
+\vspace*{2.5in}
+\tableofcontents
+\pagebreak
+\section{Abstract}
+Our aim is to recognize the gestures of hand using the electromyographic signals generated.  The signal is taken as a differential input from two positions on the same muscle. The signals is further refined for pattern recognition using machine learning algorithms.
+
+\section{Introduction}
+
+Wearable technology is the future of electronics gadgets. As interesting as it seems, it has myriad applications. This project aims at creating one such prototype, a hand gesture recognition system, using electromyography.
+Electromyography (EMG) is an electrodiagnostic medicine technique for evaluating and recording the electrical activity produced by the skeletal muscles. The basics of EMG are used to design a circuit that takes the differential signals from two electrodes placed on the same muscle at different locations as input, with one electrode as bone reference. 
+The circuit pre-amplifies the input signal, filters the resultant signal for noise, rectifies it, and finally amplifies it. This output signal is then fed to a machine learning algorithm, which associates different signals with different data, and hence different gestures, and this can be utilized further to integrate with objects, that can be controlled using the gesture recognition system.
+
+\section{Motivation}
+Coming across the various spheres of life where this wearable technology can be applied, our major motivation for this project came from one such need. Among us, there are some people who do not have the voice to express, and sometimes, the capability to hear. The deaf and dumb sign language was developed to aid the communication for such people. Our idea was to create a device which could help them communicate, to give them a voice. The idea was to create a dictionary, using EMG and machine learning to recognize the sign language gestures, and then further integrating them with a text to speech algorithm. 
+This project is most elementary version of what the vision was. Nonetheless, every single step counts.
+
+\section{Working}
+\subsection{Electronics}
+We have designed a circuit which consists of four sub-circuits.
+\begin{itemize}
+\item \textbf{Pre amplification using the in-amp circuit}: The differential input is amplified using the in-amp circuit at the very first step.
+\item \textbf{Sallen key Eighth order Bandpass Filter}: This filter is designed by cascading four filters in a row. The first two filters are low pass filters in the sallen-key configuration, the filter out all frequencies below $350$ Hz and pass them on to the next two filters, which are high pass filters in the sallen-key configuration with the threshold frequency of $20$ Hz. This way, the required EMG signal moves to the next sub-circuit ($20$-$350$ Hz frequency range), and the noise is largely reduced.
+\item \textbf{Precision Rectifier and De-coupling capacitor}: The machine learning algorithms work on the “mean” of data logic. Both positive and negative input to the algorithm lead to the mean always falling close to zero. To avoid this vague result, the signal is rectified, where all the negative part of the signal is converted to positive using a precision rectifier.
+\item \textbf{Amplifier}: Amplifier in the non-inverting configuration is used to amplify the attenuated signal.
+\end{itemize}
+\subsection{Programming}
+Different gestures have different input patterns. We exploit this fact to recognise gestures. First we train our neural network by giving several inputs of particular gestures. The input is in the form of a matrix of $40$ float values between $0$-$1$. 
+\\
+Input comes from mbed to the computer via bluetooth. We use Matlab to establish the connection. The input matrix is fed to the trained network . The output is a one dimensional matrix which corresponds to the probability of given input being one of the trained gesture. 
+
+\section{Implementation}
+\subsection{Hardware \& Software}
+\begin{itemize}
+\item \textbf{Mbed}: Used to collect data 
+\\Specifications
+\begin{itemize}
+\item Mbed LPC$1768$ Microcontroller
+\item $6$ serial pins
+\item $6$ analog input pins
+\item $1$ reset button
+\item $4$ LEDs
+\item Minimum Voltage: $4.5$V
+\item Maximum Voltage: $9$V
+\item On board Flash memory to store the Mbed code
+\end{itemize}
+\item \textbf{HC-$05$ Bluetooth Module}:\\Used to transmit data wireless-ly
+\begin{itemize}
+\item $2$ Serial pins
+\item Input voltage: $3.3$V
+\end{itemize}
+
+\item \textbf{Matlab}:
+\\
+It was used to make serial connection between computer and HC-$05$ and take the input data. The data was then processed by the neural network toolbox available in matlab.
+
+\item \textbf{Operational Amplifiers}: 
+\begin{itemize}
+\item TL-$084$CN
+\item LM-$324$N
+\item UA$741$CN
+\end{itemize}
+
+\item \textbf{Instrumentation Amplifiers}:
+\\
+AD-$620$  
+
+\item \textbf{Capacitors}: 
+\\
+$1$uF, $1$nF, $10$uF 
+
+\item \textbf{Resistors}:
+\\
+(in ohms)
+\\
+$22, 10, 100k, 16k, 5.6k, 10k$ Variacs 
+\end{itemize}
+\subsection{Our Approach}
+\subsubsection{Electronics}
+We fed the raw signal from the electrodes to the circuit as a differential input (two electrodes for the difference, one as the reference on a bone). The filtered and amplified signal, with much less noise than before, was then passed on to the MBED.
+\subsubsection{Programming}
+We take in continuous inputs at $0.025$ second interval (the signal pulse is about a second long so we chose this value of our interval).The input was taken through analog pins of mbed. Mbed sends a float value corresponding to input as its output to the computer. When the average value of the rectified signal is above a threshold value( this is to distinguish between noise and actual input), we take the next $35$ inputs. Now this array of inputs is passed to the trained network. The output tells us the gesture.
+\section{Limitations and Future Scope}
+The analog circuit we designed had limitations of its own. The electrodes sometimes slipped from their position if the part of the hand where they were attached was not cleaned and dried properly, this added motion artifacts to the signal. 
+Also, the noise from surrounding electronic gadgets and items added to the signal if care was not taken to eliminate them. 
+The signal changed if direct contact with ground was made by the person who was wearing the electrodes.
+\\
+We tried to eliminate these problems to the extent to which it was possible in this elementary model of the hand gesture recognition system.
+\\
+This can be improved by using better electrodes to take the signal as input and remove unwanted motion artifacts. 
+\\
+The applications are countless. This can be used to control your favorite presentation, or that airplane you once needed a remote control to fly, and most of all, it can give a voice to those who cannot speak.
+\section{Links and References}
+\subsection{Github}
+\url{https://github.com/afrozalm/EMG}
+\subsection{Readings}
+\begin{itemize}
+\item \url{https://www.mathworks.com}
+\\
+To check functions and commands for Matlab
+\item \url{https://developer.mbed.org/cookbook}
+\\
+To check functions to code mbed
+\item \url{https://www.sparkfun.com}
+\\
+To learn about connections of mbed and HC-05
+\item \url{http://ocw.mit.edu/courses/electrical-engineering-and-computer-science}
+\\
+Course: $6.002$ Circuits and Electronics
+\\
+Basic electronics, op-amp and in-amp circuits, amplifiers, rectifier, and filters.
+\item \url{https://www.coursera.org/course/introtoelectronics}
+\item \url{https://www.youtube.com/watch?v=NXB1lSWvcCs}
+\\
+To learn PCB designing
+
+\end{itemize}
+\end{document}
